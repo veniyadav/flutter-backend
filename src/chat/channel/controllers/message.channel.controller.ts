@@ -17,16 +17,16 @@ import {
     UseGuards,
     UseInterceptors
 } from "@nestjs/common";
-import {MessageChannelService} from "../services/message.channel.service";
-import {FilesInterceptor} from "@nestjs/platform-express";
-import {SendMessageDto} from "../dto/send.message.dto";
-import {DeleteMessageDto} from "../dto/delete.message.dto";
-import {VerifiedAuthGuard} from "../../../core/guards/verified.auth.guard";
-import {V1Controller} from "../../../core/common/v1-controller.decorator";
-import {MongoRoomIdDto} from "../../../core/common/dto/mongo.room.id.dto";
-import {resOK} from "../../../core/utils/res.helpers";
-import {MessagesSearchDto} from "../../message/dto/messages_search_dto";
-import {RoomIdAndMsgIdDto} from "../../../core/common/dto/room.id.and.msg.id.dto";
+import { MessageChannelService } from "../services/message.channel.service";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { SendMessageDto } from "../dto/send.message.dto";
+import { DeleteMessageDto } from "../dto/delete.message.dto";
+import { VerifiedAuthGuard } from "../../../core/guards/verified.auth.guard";
+import { V1Controller } from "../../../core/common/v1-controller.decorator";
+import { MongoRoomIdDto } from "../../../core/common/dto/mongo.room.id.dto";
+import { resOK } from "../../../core/utils/res.helpers";
+import { MessagesSearchDto } from "../../message/dto/messages_search_dto";
+import { RoomIdAndMsgIdDto } from "../../../core/common/dto/room.id.and.msg.id.dto";
 
 
 @UseGuards(VerifiedAuthGuard)
@@ -36,7 +36,6 @@ export class MessageChannelController {
         private readonly channelMessageService: MessageChannelService
     ) {
     }
-
 
     @UseInterceptors(
         FilesInterceptor('file', 2, {
@@ -48,9 +47,10 @@ export class MessageChannelController {
             },
         }),
     )
+
     @Post('/')
     async createMessage(
-        @Req() req:any,
+        @Req() req: any,
         @Param() roomDtoId: MongoRoomIdDto,
         @Body() dto: SendMessageDto,
         @UploadedFiles() file?: any[],
@@ -67,25 +67,25 @@ export class MessageChannelController {
     }
 
     @Delete('/:messageId/delete/:type')
-    async deleteRoomMessage(@Req() req:any, @Param() dto: DeleteMessageDto) {
+    async deleteRoomMessage(@Req() req: any, @Param() dto: DeleteMessageDto) {
         dto.myUser = req.user;
         return resOK(await this.channelMessageService.deleteRoomMessage(dto));
     }
 
     @Post('/:messageId/star')
-    async starRoomMessage(@Req() req:any, @Param() dto: RoomIdAndMsgIdDto) {
+    async starRoomMessage(@Req() req: any, @Param() dto: RoomIdAndMsgIdDto) {
         dto.myUser = req.user;
         return resOK(await this.channelMessageService.starRoomMessage(dto));
     }
 
     @Post('/:messageId/un-star')
-    async unStarRoomMessage(@Req() req:any, @Param() dto: RoomIdAndMsgIdDto) {
+    async unStarRoomMessage(@Req() req: any, @Param() dto: RoomIdAndMsgIdDto) {
         dto.myUser = req.user;
         return resOK(await this.channelMessageService.unStarRoomMessage(dto));
     }
 
     @Get('/stars')
-    async getMyAllStarMessages(@Req() req:any, @Param() dto: MongoRoomIdDto) {
+    async getMyAllStarMessages(@Req() req: any, @Param() dto: MongoRoomIdDto) {
         dto.myUser = req.user;
         return resOK(await this.channelMessageService.getMyAllStarMessages(dto));
     }
@@ -94,7 +94,7 @@ export class MessageChannelController {
 
     @Get('/')
     async getRoomMessages(
-        @Req() req:any,
+        @Req() req: any,
         @Param() paramDto: MongoRoomIdDto,
         @Query() dto: MessagesSearchDto,
     ) {
@@ -102,7 +102,7 @@ export class MessageChannelController {
     }
 
     @Patch('/:messageId/one-seen')
-    async oneSeeThisMessage(@Req() req:any, @Param() dto: RoomIdAndMsgIdDto) {
+    async oneSeeThisMessage(@Req() req: any, @Param() dto: RoomIdAndMsgIdDto) {
         dto.myUser = req.user;
         return resOK(await this.channelMessageService.oneSeeThisMessage(dto));
     }
