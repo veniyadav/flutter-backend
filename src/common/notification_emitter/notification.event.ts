@@ -91,54 +91,54 @@ export class NotificationEvent {
     }
 
 
-    @OnEvent("send.all.active")
-    async sendToAllActiveUsers(title: string, body: string) {
-        if (this.isFirebaseFcmEnabled) {
-            try {
-                await this.messaging.sendToTopic(PushTopics.AdminAndroid, {
-                    notification: {
-                        body,
-                        title
-                    }
-                }, {
-                    contentAvailable: true,
-                    priority: "high",
+    // @OnEvent("send.all.active")
+    // async sendToAllActiveUsers(title: string, body: string) {
+    //     if (this.isFirebaseFcmEnabled) {
+    //         try {
+    //             await this.messaging.sendToTopic(PushTopics.AdminAndroid, {
+    //                 notification: {
+    //                     body,
+    //                     title
+    //                 }
+    //             }, {
+    //                 contentAvailable: true,
+    //                 priority: "high",
 
-                });
-                await this.messaging.sendToTopic(PushTopics.AdminIos, {
-                    notification: {
-                        body,
-                        title
-                    }
-                }, {
-                    contentAvailable: true,
-                    priority: "high",
-                });
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        if (this.isOneSignalEnabled) {
-            const notification: CreateNotificationBody = {
-                "included_segments": [
-                    "Active Users",
-                    "Subscribed Users"
-                ],
-                "priority": 10,
-                headings: {"en": title},
-                "contents": {
-                    "en": body
-                }
-            };
-            this.onesignalClient.createNotification(notification)
-                .then(response => {
-                    //console.log(response)
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-        }
-    }
+    //             });
+    //             await this.messaging.sendToTopic(PushTopics.AdminIos, {
+    //                 notification: {
+    //                     body,
+    //                     title
+    //                 }
+    //             }, {
+    //                 contentAvailable: true,
+    //                 priority: "high",
+    //             });
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
+    //     }
+    //     if (this.isOneSignalEnabled) {
+    //         const notification: CreateNotificationBody = {
+    //             "included_segments": [
+    //                 "Active Users",
+    //                 "Subscribed Users"
+    //             ],
+    //             "priority": 10,
+    //             headings: {"en": title},
+    //             "contents": {
+    //                 "en": body
+    //             }
+    //         };
+    //         this.onesignalClient.createNotification(notification)
+    //             .then(response => {
+    //                 //console.log(response)
+    //             })
+    //             .catch(e => {
+    //                 console.log(e);
+    //             });
+    //     }
+    // }
 
     @OnEvent("send.onesignal")
     async sendToOneSignal(event: NotificationData) {
