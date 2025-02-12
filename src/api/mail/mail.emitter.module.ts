@@ -30,8 +30,12 @@ import root from "app-root-path";
                         auth: {
                             user: config.getOrThrow("EMAIL_USER"),
                             pass: config.getOrThrow("EMAIL_PASSWORD")
+                        },
+                        tls: {
+                            rejectUnauthorized: false 
                         }
                     },
+                    
                     defaults: {
                         from: `\"No Reply\" <${config.getOrThrow("EMAIL_USER")}>`
                     },
@@ -40,7 +44,7 @@ import root from "app-root-path";
                         adapter: new HandlebarsAdapter(),
                         options: {
                             strict: true
-                        }
+                        } 
                     }
                 });
             },
