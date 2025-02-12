@@ -4,15 +4,15 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import { Inject, Logger, Injectable } from "@nestjs/common";
-import { OnEvent } from "@nestjs/event-emitter";
+import {Inject, Logger, Injectable} from "@nestjs/common";
+import {OnEvent} from "@nestjs/event-emitter";
 import * as OneSignal from "onesignal-node";
-import { ConfigService } from "@nestjs/config";
-import { CreateNotificationBody } from "onesignal-node/lib/types";
-import { getMessaging, Messaging } from "firebase-admin/messaging";
-import { UserService } from "../../api/user_modules/user/user.service";
-import { UserDeviceService } from "../../api/user_modules/user_device/user_device.service";
-import { PushTopics } from "../../core/utils/enums";
+import {ConfigService} from "@nestjs/config";
+import {CreateNotificationBody} from "onesignal-node/lib/types";
+import {getMessaging, Messaging} from "firebase-admin/messaging";
+import {UserService} from "../../api/user_modules/user/user.service";
+import {UserDeviceService} from "../../api/user_modules/user_device/user_device.service";
+import {PushTopics} from "../../core/utils/enums";
 
 //
 export class NotificationData {
@@ -69,7 +69,7 @@ export class NotificationEvent {
         if (!this.onesignalClient) {
             return;
         }
-        await this.onesignalClient.editDevice(token, { "tags": { [topic]: true } });
+        await this.onesignalClient.editDevice(token, {"tags": {[topic]: true}});
     }
 
     @OnEvent("topic.fcm")
@@ -90,42 +90,53 @@ export class NotificationEvent {
         }
     }
 
-    @OnEvent('send.all.active')
+
+    @OnEvent("send.all.active")
     async sendToAllActiveUsers(title: string, body: string) {
         if (this.isFirebaseFcmEnabled) {
             try {
-                // Sending notification to Android topic
-                await this.messaging.send({
-                    topic: 'AdminAndroid', // Make sure this topic is correctly subscribed by users
-                    notification: { body, title },
-                    android: { priority: 'high' },
-                    apns: { payload: { aps: { contentAvailable: true } } },
-                });
+                await this.messaging.sendToTopic(PushTopics.AdminAndroid, {
+                    notification: {
+                        body,
+                        title
+                    }
+                }, {
+                    contentAvailable: true,
+                    priority: "high",
 
-                // Sending notification to iOS topic
-                await this.messaging.send({
-                    topic: 'AdminIos', // Make sure this topic is correctly subscribed by users
-                    notification: { body, title },
-                    android: { priority: 'high' },
-                    apns: { payload: { aps: { contentAvailable: true } } },
                 });
-
+                await this.messaging.sendToTopic(PushTopics.AdminIos, {
+                    notification: {
+                        body,
+                        title
+                    }
+                }, {
+                    contentAvailable: true,
+                    priority: "high",
+                });
             } catch (err) {
-                console.error('Error sending Firebase notification:', err);
+                console.log(err);
             }
         }
-
         if (this.isOneSignalEnabled) {
             const notification: CreateNotificationBody = {
-                included_segments: ['Active Users', 'Subscribed Users'],
-                priority: 10,
-                headings: { en: title },
-                contents: { en: body },
+                "included_segments": [
+                    "Active Users",
+                    "Subscribed Users"
+                ],
+                "priority": 10,
+                headings: {"en": title},
+                "contents": {
+                    "en": body
+                }
             };
-
             this.onesignalClient.createNotification(notification)
-                .then(response => console.log('OneSignal notification sent:', response))
-                .catch(err => console.error('OneSignal error:', err));
+                .then(response => {
+                    //console.log(response)
+                })
+                .catch(e => {
+                    console.log(e);
+                });
         }
     }
 
@@ -225,7 +236,7 @@ export class NotificationEvent {
             ],
             "priority": 10,
             "include_player_ids": tokens,
-            headings: { "en": event.title },
+            headings: {"en": event.title},
             "contents": {
                 "en": event.body
             },
