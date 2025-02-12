@@ -12,7 +12,7 @@
     "start": "cross-env INLINE_RUNTIME_CHUNK=false NODE_ENV=development nest start --watch",
     "start:docker": "nest start",
     "docker": "INLINE_RUNTIME_CHUNK=false nest start",
-    "start:dev": "cross-env INLINE_RUNTIME_CHUNK=false NODE_ENV=development nest start --watch",
+    "start:dev": "cross-env INLINE_RUNTIME_CHUNK=false NODE_ENV=development node dist/src/index.js",
     "start:prod": "cross-env INLINE_RUNTIME_CHUNK=false NODE_ENV=production node dist/src/main.js",
     "pm2": "cross-env INLINE_RUNTIME_CHUNK=false NODE_ENV=production pm2 start dist/src/main.js"
   },
