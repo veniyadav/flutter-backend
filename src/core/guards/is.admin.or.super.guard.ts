@@ -22,8 +22,8 @@ export class IsSuperAdminGuard implements CanActivate {
         let passwordViewer = this.config.getOrThrow("ControlPanelAdminPasswordViewer")
         const request = context.switchToHttp().getRequest();
         const userPassword = request.headers["admin-key"].toString();
-        console.log(userPassword)
-        console.log(password)
+        console.log("userPassword",userPassword)
+        console.log("password",password)
         if (userPassword != password && userPassword != passwordViewer) {
             throw new BadRequestException("admin-key header should be valid as on the .env")
         }

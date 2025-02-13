@@ -67,7 +67,7 @@ async function bootstrap() {
   //app.use(xss());
   const redisIoAdapter = new RedisIoAdapter(app);
   app.useWebSocketAdapter(redisIoAdapter);
-  const port = 6000;
+  const port = 5000;
   app.useStaticAssets(join(root.path, "public"));
   app.useStaticAssets(join(root.path, "public", "v-public"));
   app.useStaticAssets(join(root.path, "public", "media"));

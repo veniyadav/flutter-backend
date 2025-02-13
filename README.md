@@ -444,3 +444,19 @@ export class NotificationEvent {
 
 
 }
+
+<!-- live -->
+
+wss://www.kiaancloud.store/fl/socket.io?auth=Bearer+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTc0NDkzODdiMDRhMGUwNDc4YjliYSIsImRldmljZUlkIjoiNjdhNzRmZjI4N2IwNGEwZTA0NzhiYjY2IiwiYWNjZXNzVHlwZSI6ImFjY2VzcyIsImlhdCI6MTczOTQyOTU0MiwiZXhwIjoxODY3OTc5NDI5NTQyLCJhdWQiOiJ2Y2hhdC5zdXBlcnVwLmNvbSIsImlzcyI6InZjaGF0LnN1cGVydXBAZ21haWwuY29tIiwic3ViIjoiYWNjZXNzIn0.bNpa3vUdz4dKOGnvXVdQr6ZZ7FygFoEb5uFDMmntKKw&EIO=4&transport=websocket
+
+ <!-- port forward -->
+
+wss://hrb5wx2v-6000.inc1.devtunnels.ms/socket.io/?auth=Bearer+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTlhNjlmZGVhYzY3OTdlOWFlZmRkOSIsImRldmljZUlkIjoiNjdhYzQ5NTFmNjUzNjNjZTMzYjI3Y2Q5IiwiYWNjZXNzVHlwZSI6ImFjY2VzcyIsImlhdCI6MTczOTQyOTU2MywiZXhwIjoxODY3OTc5NDI5NTYzLCJhdWQiOiJ2Y2hhdC5zdXBlcnVwLmNvbSIsImlzcyI6InZjaGF0LnN1cGVydXBAZ21haWwuY29tIiwic3ViIjoiYWNjZXNzIn0.Jp0shGY4B5FT-V6tykJLX3hIrVv1icE2CsYH-Zc8YL4&EIO=4&transport=websocket
+
+ <!-- local -->
+
+ws://localhost:6000/socket.io/?auth=Bearer+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTc0NDkzODdiMDRhMGUwNDc4YjliYSIsImRldmljZUlkIjoiNjdhNzRmZjI4N2IwNGEwZTA0NzhiYjY2IiwiYWNjZXNzVHlwZSI6ImFjY2VzcyIsImlhdCI6MTczOTQyOTU0MiwiZXhwIjoxODY3OTc5NDI5NTQyLCJhdWQiOiJ2Y2hhdC5zdXBlcnVwLmNvbSIsImlzcyI6InZjaGF0LnN1cGVydXBAZ21haWwuY29tIiwic3ViIjoiYWNjZXNzIn0.bNpa3vUdz4dKOGnvXVdQr6ZZ7FygFoEb5uFDMmntKKw&EIO=4&transport=websocket
+
+
+<!-- https://www.kiaancloud.store/fl -->
+<!-- https://hrb5wx2v-6000.inc1.devtunnels.ms/ -->
