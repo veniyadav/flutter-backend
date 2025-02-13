@@ -43,4 +43,5 @@ export const i18nApi = {
     peerUserDeviceOfflineString: "peerUserDeviceOffline",
     emailMustBeValid: "emailMustBeValid",
     wait2MinutesToSendMail: "wait2MinutesToSendMail",
+    userNotActivated: "User Not activated",
 }

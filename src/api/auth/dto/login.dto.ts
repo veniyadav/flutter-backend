@@ -15,7 +15,7 @@ export default class LoginDto {
 
 
     ip: string;
-    activeStatus: string = "1";
+    isactive: boolean;
 
 
     @Allow()

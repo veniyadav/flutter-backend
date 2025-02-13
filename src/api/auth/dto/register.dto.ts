@@ -21,6 +21,8 @@ import {i18nApi} from "../../../core/utils/res.helpers";
 export default class RegisterDto {
     ip: string;
     imageBuffer?: Buffer;
+    isactive: boolean;
+
 
     @Allow()
     @Trim()
@@ -32,6 +34,7 @@ export default class RegisterDto {
     @Trim()
     @MaxLength(usersMaxNameSize)
     fullName: string;
+    
 
 
     @IsNotEmpty()
@@ -62,4 +65,6 @@ export default class RegisterDto {
     @MinLength(usersMimePasswordSize)
     @IsNotEmpty()
     password: string;
+    id: string;
+    myUser: any;
 }
