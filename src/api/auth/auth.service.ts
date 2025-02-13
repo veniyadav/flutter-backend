@@ -197,7 +197,8 @@ export class AuthService {
         console.log(config);
         return {
             accessToken: accessToken,
-            "status": config.userRegisterStatus
+            // "status": config.userRegisterStatus
+            "status": "accepted"
         };
     }
 
