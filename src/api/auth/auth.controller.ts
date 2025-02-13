@@ -9,6 +9,7 @@ import {
     Body,
     Controller,
     HttpCode,
+    Param,
     Patch,
     Post,
     Req,
@@ -16,7 +17,7 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import {AuthService} from './auth.service';
+import { AuthService } from './auth.service';
 import RegisterDto from "./dto/register.dto";
 import LoginDto from "./dto/login.dto";
 import { IpAddress } from "../../core/custom.decorator/request.ip";
@@ -28,6 +29,7 @@ import LogoutDto from "./dto/logout.dto";
 import { VerifiedAuthGuard } from "../../core/guards/verified.auth.guard";
 import ResetPasswordDto from "./dto/reset.password.dto";
 import { V1Controller } from "../../core/common/v1-controller.decorator";
+import { IUser } from '../user_modules/user/entities/user.entity';
 
 @V1Controller('auth')
 export class AuthController {
@@ -38,7 +40,7 @@ export class AuthController {
     @HttpCode(200)
     async login(
         @Body() dto: LoginDto,
-        @IpAddress() ipAddress:any,
+        @IpAddress() ipAddress: any,
         @IsDevelopment() isDev: boolean
     ) {
 
@@ -55,16 +57,16 @@ export class AuthController {
     @Post("/register")
     @UseInterceptors(imageFileInterceptor)
     async registerUser(
-        @Req() req:any,
+        @Req() req: any,
         @Body() dto: RegisterDto,
-        @IpAddress() ipAddress:any,
+        @IpAddress() ipAddress: any,
         @UploadedFile() file?: any
     ) {
         if (file) {
             dto.imageBuffer = file.buffer;
         }
 
-        
+
         try {
             dto.deviceInfo = jsonDecoder(dto.deviceInfo)
         } catch (err) {
@@ -107,7 +109,7 @@ export class AuthController {
 
     @UseGuards(VerifiedAuthGuard)
     @Post("/logout")
-    async logOut(@Body() dto: LogoutDto, @Req() req:any) {
+    async logOut(@Body() dto: LogoutDto, @Req() req: any) {
         dto.myUser = req.user
         return resOK(await this.authService.logOut(dto,));
     }
@@ -116,5 +118,12 @@ export class AuthController {
     async verifyOtpResetPassword(@Body() dto: ResetPasswordDto) {
         return resOK(await this.authService.verifyOtpResetPassword(dto));
     }
+
+    // @Patch("/update/:id")
+    // async updateUser(
+    //     @Body() dto: Partial<IUser> // Ensure DTO type is correct
+    // ) {
+    //     return resOK(await this.authService.updateUserById(dto.id, dto));
+    // }
 
 }

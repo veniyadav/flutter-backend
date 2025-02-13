@@ -4,33 +4,33 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import {BadRequestException, ForbiddenException, HttpException, Injectable} from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpException, Injectable, NotFoundException } from "@nestjs/common";
 import LoginDto from "./dto/login.dto";
 import RegisterDto from "./dto/register.dto";
 import date from "date-and-time";
 import bcrypt from "bcrypt";
-import {JwtService} from "@nestjs/jwt";
-import {UserService} from "../user_modules/user/user.service";
+import { JwtService } from "@nestjs/jwt";
+import { UserService } from "../user_modules/user/user.service";
 import geoIp from "geoip-lite";
-import {remove} from "remove-accents";
-import {UserDeviceService} from "../user_modules/user_device/user_device.service";
-import {IUser} from "../user_modules/user/entities/user.entity";
-import {AppConfigService} from "../app_config/app_config.service";
-import {isUUID} from "class-validator";
-import {ConfigService} from "@nestjs/config";
-import {UserCountryService} from "../user_modules/user_country/user_country.service";
-import {AccessTokenType, MailType, Platform, PushTopics, RegisterStatus, VPushProvider} from "../../core/utils/enums";
+import { remove } from "remove-accents";
+import { UserDeviceService } from "../user_modules/user_device/user_device.service";
+import { IUser } from "../user_modules/user/entities/user.entity";
+import { AppConfigService } from "../app_config/app_config.service";
+import { isUUID } from "class-validator";
+import { ConfigService } from "@nestjs/config";
+import { UserCountryService } from "../user_modules/user_country/user_country.service";
+import { AccessTokenType, MailType, Platform, PushTopics, RegisterStatus, VPushProvider } from "../../core/utils/enums";
 import {
     resOK,
     i18nApi
 } from "../../core/utils/res.helpers";
 import ResetPasswordDto from "./dto/reset.password.dto";
 import LogoutDto from "./dto/logout.dto";
-import {newMongoObjId} from "../../core/utils/utils";
-import {JwtDecodeRes} from "../../core/utils/interfaceces";
-import {FileUploaderService} from "../../common/file_uploader/file_uploader.service";
-import {NotificationEmitterService} from "../../common/notification_emitter/notification_emitter.service";
-import {MailEmitterService} from "../mail/mail.emitter.service";
+import { newMongoObjId } from "../../core/utils/utils";
+import { JwtDecodeRes } from "../../core/utils/interfaceces";
+import { FileUploaderService } from "../../common/file_uploader/file_uploader.service";
+import { NotificationEmitterService } from "../../common/notification_emitter/notification_emitter.service";
+import { MailEmitterService } from "../mail/mail.emitter.service";
 
 
 @Injectable()
@@ -49,6 +49,20 @@ export class AuthService {
     ) {
     }
 
+    // async updateUserById(id: string, dto: Partial<IUser>) {
+    //     let user = await this.userService.findById(id);
+    //     if (!user) {
+    //         throw new NotFoundException("User not found");
+    //     }
+    
+    //     // Update user data
+    //     let updatedUser = await this.userService.findByIdAndUpdate(id, dto, { new: true });
+    //     return resOK({
+    //         message: "User updated successfully",
+    //         user: updatedUser
+    //     });
+    // }
+    
     async comparePassword(dtoPassword, dbHasPassword) {
         let bcryptRes = await bcrypt.compare(dtoPassword, dbHasPassword);
         if (!bcryptRes) {
@@ -63,6 +77,16 @@ export class AuthService {
             dto.email,
             "+password userDevice lastMail banTo email registerStatus deletedAt"
         );
+        let isactive: IUser = await this.userService.findOne(
+            { isactive: dto.isactive === false },
+            "isActive"
+        );
+
+        if (isactive) {
+            throw new BadRequestException(i18nApi.userNotActivated);
+        }
+
+
         await this.comparePassword(dto.password, foundedUser.password)
         if (foundedUser.banTo) {
             throw new BadRequestException(i18nApi.yourAccountBlockedString);
@@ -119,73 +143,6 @@ export class AuthService {
         });
     }
 
-
-    // async login(dto: LoginDto, isDev: boolean) {
-    //     let foundedUser: IUser = await this.userService.findOneByEmailOrThrow(
-    //         dto.email,
-    //         "+password userDevice lastMail banTo email registerStatus deletedAt roles"
-    //     );
-    
-    //     await this.comparePassword(dto.password, foundedUser.password);
-    
-    //     if (foundedUser.banTo) {
-    //         throw new BadRequestException(i18nApi.yourAccountBlockedString);
-    //     }
-    
-    //     let countryData = await geoIp.lookup(dto.ip);
-    //     let countryId = null;
-    //     if (countryData) {
-    //         countryId = await this.userCountryService.setUserCountry(foundedUser._id, countryData.country);
-    //     }
-    
-    //     await this.userService.findByIdAndUpdate(foundedUser._id, {
-    //         address: countryData || {},
-    //         countryId: countryId
-    //     });
-
-    //     // Check the roles value
-    //      console.log("User roles:", foundedUser.roles);
-    
-    //      let userRole = foundedUser.roles?.length && foundedUser.roles[0] !== "admin" ? foundedUser.roles[0] : "user";
-        
-    //     let oldDevice = await this.userDevice.findOne({
-    //         uId: foundedUser._id,
-    //         userDeviceId: dto.deviceId
-    //     });
-    
-    //     let access;
-    //     if (oldDevice) {
-    //         await this.userDevice.findByIdAndUpdate(oldDevice._id, {
-    //             pushProvider: this._getVPushProvider(dto.pushKey),
-    //             pushKey: dto.pushKey
-    //         });
-    //         access = this._signJwt(foundedUser._id.toString(), oldDevice._id.toString()); // Passing 2 arguments here
-    //     } else {
-    //         let mongoDeviceId = newMongoObjId().toString();
-    //         access = this._signJwt(foundedUser._id.toString(), mongoDeviceId); // Passing 2 arguments here
-    
-    //         await this.userDevice.create({
-    //             _id: mongoDeviceId,
-    //             userDeviceId: dto.deviceId,
-    //             uId: foundedUser._id,
-    //             language: dto.language,
-    //             platform: dto.platform,
-    //             pushProvider: this._getVPushProvider(dto.pushKey),
-    //             dIp: dto.ip,
-    //             deviceInfo: dto.deviceInfo,
-    //             pushKey: dto.pushKey
-    //         });
-    //         await this._pushNotificationSubscribe(dto.pushKey, dto.platform);
-    //     }
-    
-    //     return resOK({
-    //         "accessToken": access,
-    //         "status": foundedUser.registerStatus,
-    //         "role": userRole
-    //     });
-    // }
-
-
     async register(dto: RegisterDto) {
         let countryData = await geoIp.lookup(dto.ip);
         let foundedUser: IUser = await this.userService.findOneByEmail(
@@ -237,6 +194,7 @@ export class AuthService {
         }
         let config = await this.appConfigService.getConfig();
         await this._pushNotificationSubscribe(dto.pushKey, dto.platform);
+        console.log(config);
         return {
             accessToken: accessToken,
             "status": config.userRegisterStatus
@@ -426,108 +384,4 @@ export class AuthService {
         }
     }
 
-    ///this the register
-    // async sendRegisterOtp(
-    //     dto: RegisterDto,
-    //     isDev: boolean,
-    //     session?: mongoose.ClientSession,
-    // ) {
-    //   let countryData = await geoIp.lookup(dto.ip)
-    //   let res = {};
-    //   res['message'] = 'Verification code has been send to your email';
-    //   let foundedUser: IUser = await this.userService.findOneByEmail(
-    //       dto.email,
-    //       'email lastMail verifiedAt',
-    //   );
-    //   // already register and verified
-    //   if (foundedUser && foundedUser.verifiedAt) {
-    //     throw new BadRequestException('User already in data base and verified');
-    //   }
-    //   // already register but not verified yet
-    //   if (foundedUser && !foundedUser.verifiedAt) {
-    //     let code = await this.sendMailToUser(foundedUser, MailType.VerifyEmail, isDev, session);
-    //     if (isDev) {
-    //       res['code'] = code
-    //     }
-    //     res['accessToken'] = await this.deleteDevicesAndCreateNew({
-    //       userId: foundedUser._id,
-    //       session: session,
-    //       lang: dto.lang,
-    //       platform: dto.platform,
-    //       ip: dto.ip,
-    //       mapInfo: JSON.parse(dto.mapInfo),
-    //       pushKey: dto.pushKey,
-    //       userDeviceId: dto.deviceId
-    //     })
-    //     return res;
-    //   }
-    //
-    //   //not registered yet
-    //   let createdUser: IUser = await this.userService.create({
-    //     email: dto.email,
-    //     fullName: dto.fullName,
-    //     fullNameEn: remove(dto.fullName),
-    //     address: countryData,
-    //     lastSeenAt: new Date(),
-    //     password: dto.password,
-    //     // @ts-ignore
-    //     lastMail: {},
-    //     userImage:defaultUserBigImage,
-    //   }, session);
-    //   let code = await this.sendMailToUser(createdUser, MailType.VerifyEmail, isDev, session);
-    //   if (isDev) {
-    //     res['code'] = code
-    //   }
-    //   res['accessToken'] = await this.deleteDevicesAndCreateNew({
-    //     userId: createdUser._id,
-    //     session: session,
-    //     lang: dto.lang,
-    //     platform: dto.platform,
-    //     ip: dto.ip,
-    //     mapInfo: JSON.parse(dto.mapInfo),
-    //     pushKey: dto.pushKey,
-    //     userDeviceId: dto.deviceId
-    //   })
-    //   if (dto.imageBuffer) {
-    //     let res = await this.s3.putImageCropped(dto.imageBuffer, createdUser._id);
-    //     await this.userService.findByIdAndUpdate(createdUser._id, {
-    //       userImage: res,
-    //     }, session);
-    //   }
-    //   return res;
-    // }
-
-
-    // async validateEmail(dto: ValidateEmailDto) {
-    //   let foundedUser: IUser = await this.userService.findOneByEmailOrThrow(dto.email, "fullName email lastMail verifiedAt")
-    //   if (foundedUser.verifiedAt) {
-    //     throw new BadRequestException('User already verified');
-    //   }
-    //   if (!foundedUser.lastMail || !foundedUser.lastMail.code) {
-    //     throw new BadRequestException(
-    //         'No code has been send to you to verify your email',
-    //     );
-    //   }
-    //   let min = parseInt(
-    //       date
-    //           .subtract(new Date(), foundedUser.lastMail.sendAt)
-    //           .toMinutes()
-    //           .toString(),
-    //       10,
-    //   );
-    //   if (foundedUser.lastMail.expired || min > appConfig.maxExpireEmailTime) {
-    //     throw new BadRequestException('Code has been expired');
-    //   }
-    //   if (foundedUser.lastMail.type != MailType.VerifyEmail) {
-    //     throw new BadRequestException('You must use code from VerifyEmail Type');
-    //   }
-    //   if (foundedUser.lastMail.code == dto.code) {
-    //     await this.userService.findByIdAndUpdate(foundedUser._id, {
-    //       verifiedAt: new Date(),
-    //       'lastMail.expired': true,
-    //     });
-    //     return "Email has been verified successfully"
-    //   }
-    //   throw new BadRequestException('Invalid code !');
-    // }
 }

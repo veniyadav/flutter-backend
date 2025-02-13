@@ -63,7 +63,7 @@ export const UserSchema = new mongoose.Schema(
         fullName: {type: String, required: true},
         fullNameEn: {type: String, required: true},
         bio: {type: String, default: null},
-        isactive: {type: Boolean, default: true},  //isActive add in this scamma
+        isactive: {type: Boolean, default: true}, 
         userGlobalCallStatus: {type: Object, default: UserGlobalCallStatus.createEmpty()},
         uniqueCode: {type: Number, required: true},
         password: {type: String, required: true, select: false},
