@@ -4,31 +4,31 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import {Injectable} from "@nestjs/common";
-import {UpdateConfigDto} from "./dto/update_config_dto";
-import {AppConfigService} from "../app_config/app_config.service";
-import {UserService} from "../user_modules/user/user.service";
-import {FileUploaderService} from "../../common/file_uploader/file_uploader.service";
-import {ConfigService} from "@nestjs/config";
-import {UserDeviceService} from "../user_modules/user_device/user_device.service";
-import {newMongoObjId} from "../../core/utils/utils";
-import {MongoIdDto} from "../../core/common/dto/mongo.id.dto";
-import {CreateNewVersionDto, GetVersionDto} from "./dto/admin_dto";
-import {CreateAdminNotificationDto} from "../admin_notification/dto/create-admin_notification.dto";
-import {UserAdminService} from "./other/user_admin.service";
-import {UserCountryAdminService} from "./other/user_country_admin.service";
-import {VersionsAdminService} from "./other/versions_admin.service";
-import {UserDeviceAdminService} from "./other/user_device_admin.service";
-import {SocketIoService} from "../../chat/socket_io/socket_io.service";
-import {ChannelAdminService} from "./other/channel_admin_service";
-import {ChannelService} from "../../chat/channel/services/channel.service";
-import {MessageService} from "../../chat/message/message.service";
-import {MessagesSearchDto} from "../../chat/message/dto/messages_search_dto";
-import {ReportSystemService} from "../report_system/report_system.service";
-import {PaginationParameters} from "mongoose-paginate-v2";
-import {Platform, UserRole} from "../../core/utils/enums";
-import {AdminNotificationService} from "../admin_notification/admin_notification.service";
-import {NotificationEmitterAdminService} from "./other/notification_emitter_admin.service";
+import { Injectable } from "@nestjs/common";
+import { UpdateConfigDto } from "./dto/update_config_dto";
+import { AppConfigService } from "../app_config/app_config.service";
+import { UserService } from "../user_modules/user/user.service";
+import { FileUploaderService } from "../../common/file_uploader/file_uploader.service";
+import { ConfigService } from "@nestjs/config";
+import { UserDeviceService } from "../user_modules/user_device/user_device.service";
+import { newMongoObjId } from "../../core/utils/utils";
+import { MongoIdDto } from "../../core/common/dto/mongo.id.dto";
+import { CreateNewVersionDto, GetVersionDto } from "./dto/admin_dto";
+import { CreateAdminNotificationDto } from "../admin_notification/dto/create-admin_notification.dto";
+import { UserAdminService } from "./other/user_admin.service";
+import { UserCountryAdminService } from "./other/user_country_admin.service";
+import { VersionsAdminService } from "./other/versions_admin.service";
+import { UserDeviceAdminService } from "./other/user_device_admin.service";
+import { SocketIoService } from "../../chat/socket_io/socket_io.service";
+import { ChannelAdminService } from "./other/channel_admin_service";
+import { ChannelService } from "../../chat/channel/services/channel.service";
+import { MessageService } from "../../chat/message/message.service";
+import { MessagesSearchDto } from "../../chat/message/dto/messages_search_dto";
+import { ReportSystemService } from "../report_system/report_system.service";
+import { PaginationParameters } from "mongoose-paginate-v2";
+import { Platform, UserRole } from "../../core/utils/enums";
+import { AdminNotificationService } from "../admin_notification/admin_notification.service";
+import { NotificationEmitterAdminService } from "./other/notification_emitter_admin.service";
 
 
 @Injectable()
@@ -151,7 +151,7 @@ export class AdminPanelService {
     }
 
     async getNotification() {
-        return this.adminNotificationService.findAll({}, null, {sort: "-_id"})
+        return this.adminNotificationService.findAll({}, null, { sort: "-_id" })
     }
 
     async getUserChats(peerId: string, filter: object) {
@@ -193,24 +193,24 @@ export class AdminPanelService {
 
     async getUserReports(dto: object) {
         let paginationParameters = new PaginationParameters({
-                query: {
-                    limit: 50,
-                    page: 1,
-                    sort: "-_id",
-                    ...dto,
-                    populate: [
-                        {
-                            path: 'uId',
-                            select: "fullName verifiedAt userImage registerStatus banTo lastSeenAt bio"
-                        },
-                        {
-                            path: 'targetId',
-                            select: "fullName verifiedAt userImage registerStatus banTo lastSeenAt bio"
-                        }
-                    ]
-                },
+            query: {
+                limit: 50,
+                page: 1,
+                sort: "-_id",
+                ...dto,
+                populate: [
+                    {
+                        path: 'uId',
+                        select: "fullName verifiedAt userImage registerStatus banTo lastSeenAt bio"
+                    },
+                    {
+                        path: 'targetId',
+                        select: "fullName verifiedAt userImage registerStatus banTo lastSeenAt bio"
+                    }
+                ]
+            },
 
-            }
+        }
         ).get()
         delete dto['limit']
         delete dto['page']

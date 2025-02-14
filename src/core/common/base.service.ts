@@ -30,4 +30,5 @@ export abstract class BaseService<IM> {
     abstract findByIdAndDelete(id: string, session?): Promise<any>
     abstract deleteMany(filter: FilterQuery<IM>, session?): Promise<any>
     abstract findCount(filter: FilterQuery<IM>, session?): Promise<any>
+    
 }

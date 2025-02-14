@@ -169,7 +169,7 @@ export class UserService extends BaseService<IUser> {
         return this.model.countDocuments(filter);
     }
 
-    private async _addIsPrime() {
+   async _addIsPrime() {
         await this.model.updateMany({}, {
             isPrime: false,
             hasBadge: false,

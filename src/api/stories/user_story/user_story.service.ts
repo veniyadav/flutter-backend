@@ -63,7 +63,7 @@ export class UserStoryService {
         let story = await this.storyService.create(dto.toJson());
         delete story['somePeople']
         let att = await this.storyAttachmentService.create({
-            storyId: story ["_id"],
+            // storyId: story ["_id"],
             likes: [],
             reply: [],
             shares: [],
