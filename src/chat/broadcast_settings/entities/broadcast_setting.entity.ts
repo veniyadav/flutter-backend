@@ -4,7 +4,7 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import {Document, Schema} from "mongoose";
+import { Document, Schema } from "mongoose";
 
 export interface IBroadcastSetting extends Document {
     //roomId
@@ -20,14 +20,14 @@ export interface IBroadcastSetting extends Document {
 
 export const BroadcastSettingSchema: Schema = new Schema({
     //creator id
-    cId: {type: Schema.Types.ObjectId, required: true, ref: "user"},
+    cId: { type: Schema.Types.ObjectId, required: true, ref: "user" },
     // users left this broadcast
-    outUsers: {type: [Schema.Types.ObjectId], default: []},
-    bName: {type: String, required: true},
-    bImg: {type: String, required: true},
-    createdAt: {type: Date, select: false},
-    updatedAt: {type: Date, select: false}
+    outUsers: { type: [Schema.Types.ObjectId], default: [] },
+    bName: { type: String, required: true },
+    bImg: { type: String, required: true },
+    createdAt: { type: Date, select: false },
+    updatedAt: { type: Date, select: false }
 }, {
     timestamps: true,
-     
+
 });

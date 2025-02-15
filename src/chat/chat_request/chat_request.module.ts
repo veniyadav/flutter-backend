@@ -14,4 +14,5 @@ import {ChatRequestSchema} from "./entities/chat.request.entity";
     }]),
   ]
 })
+
 export class ChatRequestModule {}
