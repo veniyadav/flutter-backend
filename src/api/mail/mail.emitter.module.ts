@@ -21,33 +21,30 @@ import root from "app-root-path";
         MailerModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: async (config: ConfigService) => {
-                return ({
-                    transport: {
-                        host: config.getOrThrow("EMAIL_HOST"),
-                        secure: true,
-                        port: 465,
-                        auth: {
-                            user: config.getOrThrow("EMAIL_USER"),
-                            pass: config.getOrThrow("EMAIL_PASSWORD")
-                        },
-                        tls: {
-                            rejectUnauthorized: false 
-                        }
-                    },
-                    
-                    defaults: {
-                        from: `\"No Reply\" <${config.getOrThrow("EMAIL_USER")}>`
-                    },
-                    template: {
-                        dir: join(root.path, "dist", "api", "mail", "templates"),
-                        adapter: new HandlebarsAdapter(),
-                        options: {
-                            strict: true
-                        } 
-                    }
-                });
-            },
+            useFactory: async (config: ConfigService) => ({
+                transport: {
+                  host: config.getOrThrow("EMAIL_HOST"),
+                  secure: true,
+                  port: 465,
+                  auth: {
+                    user: config.getOrThrow("EMAIL_USER"),
+                    pass: config.getOrThrow("EMAIL_PASSWORD"),
+                  },
+                  debug: true, // Enable debug logs
+                  logger: false, // Enable logging
+                },
+                defaults: {
+                  from: `"No Reply" <${config.getOrThrow("EMAIL_USER")}>`,
+                },
+                template: {
+                  dir: join(root.path, "dist", "api", "mail", "templates"),
+                  adapter: new HandlebarsAdapter(),
+                  options: {
+                    strict: true,
+                  },
+                },
+              }),
+              
 
         }),
         AppConfigModule

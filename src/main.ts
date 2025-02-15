@@ -41,7 +41,7 @@ async function bootstrap() {
     cors: {
       origin: "*"
     },
-    logger: ["error", "warn"]
+    // logger: ["error", "warn"]
   });
   let isDev = process.env.NODE_ENV == "development";
   app.use(morgan("tiny", {
