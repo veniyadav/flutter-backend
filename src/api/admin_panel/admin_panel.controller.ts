@@ -75,7 +75,7 @@ export class AdminPanelController {
     async getNotifications() {
         return resOK(await this.adminPanelService.getNotification());
     }
-
+    
     @Get("/users/log")
     async getUsersLog() {
         return resOK(await this.adminPanelService.getUsersLog());

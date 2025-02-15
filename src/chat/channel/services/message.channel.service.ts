@@ -211,6 +211,7 @@ export class MessageChannelService {
     private sha256FromBuffer(buffer: Buffer) {
         return crypto.createHash('sha256').update(buffer).digest('hex');
     }
+    
     private async getMessageAttachment(dto: SendMessageDto) {
         if (dto.isInfo()) {
             if (!dto._messageAttachment) throw new BadRequestException("for isInfo message we must include _messageAttachment")

@@ -90,14 +90,17 @@ export class UserAdminService {
             limit: 70,
             lean: true
         })
+
         for (let u of users) {
             let device = await this.userDeviceService.findOne({
                 uId: u._id
             }, "platform", {
                 sort: "_id"
             })
+            
             res.push({...u, "platform": device.platform})
         }
+
         return res;
     }
 }

@@ -43,6 +43,7 @@ export class NotificationEvent {
         if (this.isFirebaseFcmEnabled) {
             this.messaging = getMessaging();
         }
+        
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
                 this.config.getOrThrow("oneSignalAppId"),
