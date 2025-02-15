@@ -37,22 +37,24 @@ async function bootstrap() {
   if (process.env.isOneSignalEnabled == "true") {
     console.log("You use  OneSignal as  push notification provider ");
   }
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      origin: "*"
-    },
-    // logger: ["error", "warn"]
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableCors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   });
+
   let isDev = process.env.NODE_ENV == "development";
   app.use(morgan("tiny", {
-    skip: function(req, res) {
+    skip: function (req, res) {
       if (isDev) {
         return false;
       }
       return res.statusCode < 400;
     }
   }));
-  app.use(helmet({crossOriginResourcePolicy: false,}));
+  app.use(helmet({ crossOriginResourcePolicy: false, }));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.useGlobalPipes(
     new ValidationPipe({
