@@ -23,18 +23,18 @@ import root from "app-root-path";
             inject: [ConfigService],
             useFactory: async (config: ConfigService) => ({
                 transport: {
-                  host: config.getOrThrow("EMAIL_HOST"),
+                  host: "smtp.gmail.com",
                   secure: true,
                   port: 465,
                   auth: {
-                    user: config.getOrThrow("EMAIL_USER"),
-                    pass: config.getOrThrow("EMAIL_PASSWORD"),
+                    user: "rehanmultanikiaantech@gmail.com",
+                    pass: "eldr dfpq ffia okmb",
                   },
                   debug: true, // Enable debug logs
                   logger: false, // Enable logging
                 },
                 defaults: {
-                  from: `"No Reply" <${config.getOrThrow("EMAIL_USER")}>`,
+                  from: `"No Reply" <${"rehanmultanikiaantech@gmail.com"}>`,
                 },
                 template: {
                   dir: join(root.path, "dist", "api", "mail", "templates"),

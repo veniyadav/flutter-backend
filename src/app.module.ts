@@ -81,7 +81,7 @@ import {CallHistoryModule} from "./chat/call_modules/call_history/call_history.m
             inject: [ConfigService],
             useFactory: async (conf: ConfigService) => {
                 return {
-                    uri: conf.getOrThrow<string>("DB_URL")
+                    uri: "mongodb+srv://demo:RKFyw77dzw8dvTdz@cluster0.ljji9.mongodb.net/flutter-backend"
                 };
             }
         }),

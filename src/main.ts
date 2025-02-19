@@ -30,13 +30,13 @@ import { RedisIoAdapter } from "./chat/socket_io/redis-io.adapter";
  */
 async function bootstrap() {
   console.log(process.env.NODE_ENV)
-  if (process.env.isFirebaseFcmEnabled == "true") {
+  // if (process.env.isFirebaseFcmEnabled == "true") {
     console.log("You use firebase as  push notification provider");
     await admin.initializeApp({ credential: admin.credential.cert(path.join(root.path, "firebase-adminsdk.json")) });
-  }
-  if (process.env.isOneSignalEnabled == "true") {
+  // }
+  // if (process.env.isOneSignalEnabled == "true") {
     console.log("You use  OneSignal as  push notification provider ");
-  }
+  // }
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
     origin: "*",

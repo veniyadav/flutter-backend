@@ -27,13 +27,13 @@ import {MailEmitterModule} from "../mail/mail.emitter.module";
       imports: [ConfigModule],
       useFactory: async (args: ConfigService) => {
         return {
-          secret: args.getOrThrow("JWT_SECRET"),
+          secret: "your_secret_key",
           signOptions: {
             expiresIn: 1866240000000,
             subject: TokenType.Access,
-            issuer: args.getOrThrow("issuer"),
+            issuer: "lmrhub@gmail.com",
             algorithm: "HS256",
-            audience: args.getOrThrow("audience")
+            audience: "lmrhub.com"
           }
         };
       },

@@ -37,8 +37,8 @@ export class NotificationEvent {
         private readonly userDevice: UserDeviceService,
         private readonly config: ConfigService
     ) {
-        this.isFirebaseFcmEnabled = config.getOrThrow("isFirebaseFcmEnabled") === "true";
-        this.isOneSignalEnabled = config.getOrThrow("isOneSignalEnabled") === "true";
+        this.isFirebaseFcmEnabled = "true" === "true";
+        this.isOneSignalEnabled = "true" === "true";
 
         if (this.isFirebaseFcmEnabled) {
             this.messaging = getMessaging();
@@ -46,8 +46,8 @@ export class NotificationEvent {
         
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
-                this.config.getOrThrow("oneSignalAppId"),
-                this.config.getOrThrow("oneSignalApiKey")
+                "99976f21-4d5b-45c4-a0bd-0b601c6824be",
+                "os_v2_app_tglw6iknlnc4jif5bnqby2bex3dawied6fuehtms2lr3q5cauzbyc2evclak454agw47viyngbpmus42zd6ev2ke4lp7onzotyagwmy"
             );
         }
     }
