@@ -75,7 +75,7 @@ async function bootstrap() {
   app.useStaticAssets(join(root.path, "public", "media"));
   await app.listen(port);
 
-  console.log(`app run on port${port}`);
+  console.log(`app run on port ${port}`);
 }
 
 bootstrap();

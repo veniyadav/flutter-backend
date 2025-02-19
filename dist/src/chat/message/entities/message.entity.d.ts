@@ -1,0 +1,30 @@
+import { Document, Schema } from "mongoose";
+import { BaseUser } from "../../../core/utils/interfaceces";
+import { MessageType } from "../../../core/utils/enums";
+export interface IMessage extends Document {
+    sId: string;
+    mentions: string[];
+    sName: string;
+    sImg: string;
+    plm: string;
+    rId: string;
+    c: string;
+    mT: MessageType;
+    msgAtt?: object;
+    linkAtt?: object;
+    rTo?: IMessage;
+    sAt?: Date;
+    dAt?: Date;
+    dltAt?: Date;
+    pBId: string;
+    stars: string[];
+    isEncrypted: boolean;
+    dF: string[];
+    oneSeenBy: string[];
+    lId: string;
+    forId?: string;
+    createdAt: string;
+    isOneSeen: boolean;
+    peerData: BaseUser;
+}
+export declare const MessageSchema: Schema;
