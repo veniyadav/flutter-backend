@@ -10,7 +10,7 @@ import { whitelistImages } from "./constants";
 
 export const imageFileInterceptor = FileInterceptor('file', {
     limits: {
-        fileSize:  25 * 1024 * 1024,
+        fileSize:  2 * 1024 * 1024,
         files: 1,
     },
     fileFilter: (req: Request, file, cb) => {

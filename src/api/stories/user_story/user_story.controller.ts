@@ -16,15 +16,15 @@ import {
     UseInterceptors,
     UploadedFiles, Query, BadRequestException
 } from '@nestjs/common';
-import {UserStoryService} from './user_story.service';
-import {VerifiedAuthGuard} from "../../../core/guards/verified.auth.guard";
-import {V1Controller} from "../../../core/common/v1-controller.decorator";
-import {resOK} from "../../../core/utils/res.helpers";
-import {CreateStoryDto} from "./dto/story.dto";
-import {FilesInterceptor} from "@nestjs/platform-express";
-import {MongoIdDto} from "../../../core/common/dto/mongo.id.dto";
-import {isValidMongoId} from "../../../core/utils/utils";
-import {jsonDecoder} from "../../../core/utils/app.validator";
+import { UserStoryService } from './user_story.service';
+import { VerifiedAuthGuard } from "../../../core/guards/verified.auth.guard";
+import { V1Controller } from "../../../core/common/v1-controller.decorator";
+import { resOK } from "../../../core/utils/res.helpers";
+import { CreateStoryDto } from "./dto/story.dto";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { MongoIdDto } from "../../../core/common/dto/mongo.id.dto";
+import { isValidMongoId } from "../../../core/utils/utils";
+import { jsonDecoder } from "../../../core/utils/app.validator";
 
 
 @UseGuards(VerifiedAuthGuard)
@@ -39,10 +39,11 @@ export class UserStoryController {
         FilesInterceptor('file', 4, {
             limits: {
                 files: 4,
-                fields: 400,
-                fieldSize: 400000000000,
-                fieldNameSize: 400000000000,
+                fields: 10,
+                fieldSize: 1 * 1024 * 1024,
+                fieldNameSize: 255,
             },
+
         }),
     )
     @Post()
