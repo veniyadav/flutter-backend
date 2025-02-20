@@ -17,8 +17,8 @@ let IsSuperAdminGuard = class IsSuperAdminGuard {
         this.config = config;
     }
     async canActivate(context) {
-        let password = this.config.getOrThrow("ControlPanelAdminPassword").toString();
-        let passwordViewer = this.config.getOrThrow("ControlPanelAdminPasswordViewer");
+        let password = "super-up-strong-password";
+        let passwordViewer = "lmrhub@123";
         const request = context.switchToHttp().getRequest();
         const userPassword = request.headers["admin-key"].toString();
         console.log("userPassword", userPassword);
