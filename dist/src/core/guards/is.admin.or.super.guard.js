@@ -17,7 +17,7 @@ let IsSuperAdminGuard = class IsSuperAdminGuard {
         this.config = config;
     }
     async canActivate(context) {
-        let password = "super-up-strong-password";
+        let password = "lmrhub@456";
         let passwordViewer = "lmrhub@123";
         const request = context.switchToHttp().getRequest();
         const userPassword = request.headers["admin-key"].toString();
