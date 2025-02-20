@@ -4,19 +4,19 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import {Injectable} from '@nestjs/common';
-import {NotificationEmitterService, rExp} from "../../../common/notification_emitter/notification_emitter.service";
-import {UserService} from "../../../api/user_modules/user/user.service";
-import {RoomMemberService} from "../../room_member/room_member.service";
-import {RoomMiddlewareService} from "../../room_middleware/room_middleware.service";
-import {GroupMemberService} from "../../group_member/group_member.service";
-import {BroadcastMemberService} from "../../broadcast_member/broadcast_member.service";
-import {UserDeviceService} from "../../../api/user_modules/user_device/user_device.service";
-import {IMessage} from "../../message/entities/message.entity";
-import {PushKeyAndProvider} from "../../../core/utils/interfaceces";
-import {IRoomMember} from "../../room_member/entities/room_member.entity";
-import {NotificationData} from "../../../common/notification_emitter/notification.event";
-import {NotificationType} from "../../../core/utils/enums";
+import { Injectable } from '@nestjs/common';
+import { NotificationEmitterService, rExp } from "../../../common/notification_emitter/notification_emitter.service";
+import { UserService } from "../../../api/user_modules/user/user.service";
+import { RoomMemberService } from "../../room_member/room_member.service";
+import { RoomMiddlewareService } from "../../room_middleware/room_middleware.service";
+import { GroupMemberService } from "../../group_member/group_member.service";
+import { BroadcastMemberService } from "../../broadcast_member/broadcast_member.service";
+import { UserDeviceService } from "../../../api/user_modules/user_device/user_device.service";
+import { IMessage } from "../../message/entities/message.entity";
+import { PushKeyAndProvider } from "../../../core/utils/interfaceces";
+import { IRoomMember } from "../../room_member/entities/room_member.entity";
+import { NotificationData } from "../../../common/notification_emitter/notification.event";
+import { NotificationType } from "../../../core/utils/enums";
 
 
 @Injectable()
@@ -79,7 +79,7 @@ export class NotificationEmitterChannelService {
     async groupChatNotification(msg: IMessage, groupName: string) {
         let tokens = new PushKeyAndProvider([], [], []);
         let groupId = msg.rId;
-        let members = await this.groupMember.findAll({rId: groupId}, "uId");
+        let members = await this.groupMember.findAll({ rId: groupId }, "uId");
         for (let m of members) {
             let rM: IRoomMember = await this.middlewareService.isThereRoomMember(msg.rId, m.uId);
             if (rM == null) continue;
@@ -107,7 +107,7 @@ export class NotificationEmitterChannelService {
     async broadcastNotification(msg: IMessage) {
         let tokens = new PushKeyAndProvider([], [], []);
         let broadcastId = msg.rId;
-        let members = await this.broadcastMember.findAll({bId: broadcastId}, 'rId uId');
+        let members = await this.broadcastMember.findAll({ bId: broadcastId }, 'rId uId');
         for (let m of members) {
             let rM: IRoomMember = await this.middlewareService.isThereRoomMember(m.rId, m.uId);
             if (rM == null) continue;
