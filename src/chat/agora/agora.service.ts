@@ -22,8 +22,8 @@ export class AgoraService {
         let currentTime = Math.floor(Date.now() / 1000);
         let privilegeExpireTime = currentTime + expireTime;
         let token = RtcTokenBuilder.buildTokenWithUid(
-            this.configService.getOrThrow("AGORA_APP_ID"),
-            this.configService.getOrThrow("AGORA_APP_CERTIFICATE"),
+            "ca89167169aa4ba293aaa4c669fd25c4",
+            "77abde1a3347413199a7de281b9bc06d",
             channelName,
             0,
             role,

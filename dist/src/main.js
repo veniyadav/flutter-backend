@@ -50,7 +50,7 @@ async function bootstrap() {
         credentials: true,
     });
     let isDev = process.env.NODE_ENV == "development";
-    app.use((0, morgan_1.default)("tiny", {
+    app.use((0, morgan_1.default)("dev", {
         skip: function (req, res) {
             if (isDev) {
                 return false;
@@ -74,7 +74,7 @@ async function bootstrap() {
     app.useStaticAssets((0, path_1.join)(app_root_path_1.default.path, "public", "v-public"));
     app.useStaticAssets((0, path_1.join)(app_root_path_1.default.path, "public", "media"));
     await app.listen(port);
-    console.log(`app run on port${port}`);
+    console.log(`app run on port ${port}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
