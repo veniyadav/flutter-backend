@@ -46,7 +46,7 @@ async function bootstrap() {
   });
 
   let isDev = process.env.NODE_ENV == "development";
-  app.use(morgan("tiny", {
+  app.use(morgan("dev", {
     skip: function (req, res) {
       if (isDev) {
         return false;
