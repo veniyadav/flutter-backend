@@ -4,11 +4,13 @@
  * MIT license that can be found in the LICENSE file.
  */
 
-import {Allow, IsNotEmpty} from "class-validator";
+import { Allow, IsNotEmpty } from "class-validator";
 import CommonDto from "../../../../core/common/dto/common.dto";
 
 export class AcceptCallMemberDto extends CommonDto {
-    @Allow()
-    payload: any
-    callId: string
+    @IsNotEmpty()  // Ensure payload is not empty
+    payload: any;
+
+    @IsNotEmpty()  // Ensure callId is not empty
+    callId: string;
 }
