@@ -179,7 +179,9 @@ export class NotificationEvent {
                 }
             }
         }));
-        console.log(messages, "messages");
+        console.log("Notification Payload Size:", Buffer.byteLength(JSON.stringify(event.data), 'utf8'));
+
+        console.log(messages,"messages");
         try {
             const response = await this.messaging.sendEach(messages);
             console.log("Successfully sent messages:", response);
