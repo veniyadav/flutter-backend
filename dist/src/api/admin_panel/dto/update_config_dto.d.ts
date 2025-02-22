@@ -1,0 +1,32 @@
+import { RegisterStatus } from "../../../core/utils/enums";
+import CommonDto from "../../../core/common/dto/common.dto";
+export declare class UpdateConfigDto extends CommonDto {
+    enableAds: boolean;
+    approveMessage: string;
+    appName: string;
+    pendingMessage: string;
+    feedbackEmail: string;
+    shareAppMessage: string;
+    allowWebLogin: boolean;
+    allowMobileLogin: boolean;
+    allowCreateGroup: boolean;
+    allowCreateBroadcast: boolean;
+    allowDesktopLogin: boolean;
+    privacyUrl: string;
+    googlePayUrl: string;
+    appleStoreUrl: string;
+    macStoreUrl: string;
+    webChatUrl: string;
+    windowsStoreUrl: string;
+    maxExpireEmailTime: number;
+    userRegisterStatus: RegisterStatus;
+    callTimeout: number;
+    maxGroupMembers: number;
+    maxBroadcastMembers: number;
+    maxChatMediaSize: number;
+    allowCall: boolean;
+    allowMessaging: boolean;
+    allowSendMedia: boolean;
+    maxForward: number;
+    backendVersion: string;
+}
