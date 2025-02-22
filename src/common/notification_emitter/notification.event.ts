@@ -47,16 +47,16 @@ export class NotificationEvent {
         private readonly userDevice: UserDeviceService,
         private readonly config: ConfigService
     ) {
-        this.isFirebaseFcmEnabled = config.getOrThrow("isFirebaseFcmEnabled") == "true";
-        this.isOneSignalEnabled = config.getOrThrow("isOneSignalEnabled") == "true";
+        this.isFirebaseFcmEnabled = "true" == "true";
+        this.isOneSignalEnabled = "true" == "true";
 
         if (this.isFirebaseFcmEnabled) {
             this.messaging = getMessaging();
         }
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
-                this.config.getOrThrow("oneSignalAppId"),
-                this.config.getOrThrow("oneSignalApiKey")
+                "15b8ce1f-a934-4566-8c52-ddbb4cb24567",
+                "os_v2_app_cw4m4h5jgrcwndcs3w5uzmsfm77naczkw6jej5fqqvtrmewuneqrhjv52o42a55tyhrtrhknsc4yg6sykolyhllll6pstakh747k35q"
             );
         }
     }
