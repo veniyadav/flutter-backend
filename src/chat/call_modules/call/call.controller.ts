@@ -60,6 +60,8 @@ export class CallController {
     ) {
         dto.myUser = req.user;
         dto.callId = meetIdDto.callId
+        console.log("dto.callId",dto.callId);
+        console.log("meetIdDto.callId",meetIdDto.callId);
         return resOK(await this.callService.acceptCall(dto))
     }
 

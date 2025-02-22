@@ -1,227 +1,270 @@
+/**
+ * Copyright 2023, the hatemragab project author.
+ * All rights reserved. Use of this source code is governed by a
+ * MIT license that can be found in the LICENSE file.
+ */
+
 import { Inject, Logger, Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import * as OneSignal from "onesignal-node";
 import { ConfigService } from "@nestjs/config";
 import { CreateNotificationBody } from "onesignal-node/lib/types";
-import { getMessaging, Message, Messaging } from "firebase-admin/messaging";
+import { getMessaging, Messaging } from "firebase-admin/messaging";
 import { UserService } from "../../api/user_modules/user/user.service";
 import { UserDeviceService } from "../../api/user_modules/user_device/user_device.service";
 import { PushTopics } from "../../core/utils/enums";
 
-// Notification Data Structure
+//
 export class NotificationData {
+
+
+
     tokens: string[];
     title: string;
     body: string;
     tag: string;
     data: {};
-    sound?: string;
+    sound?: string
 }
 
-// Firebase error codes for token validation
 const fcmErrorCodes = [
     "messaging/invalid-registration-token",
     "messaging/registration-token-not-registered",
     "messaging/invalid-argument"
 ];
 
+
 @Injectable()
 export class NotificationEvent {
-    private readonly messaging?: Messaging;
-    private readonly onesignalClient?: OneSignal.Client;
-    private readonly isFirebaseFcmEnabled: boolean;
-    private readonly isOneSignalEnabled: boolean;
+    readonly messaging?: Messaging;
+    readonly onesignalClient?: OneSignal.Client;
+
+    isFirebaseFcmEnabled: boolean;
+    isOneSignalEnabled: boolean;
 
     constructor(
         private readonly userService: UserService,
         private readonly userDevice: UserDeviceService,
         private readonly config: ConfigService
     ) {
-        this.isFirebaseFcmEnabled = "true" === "true";
-        this.isOneSignalEnabled = "true" === "true";
+        this.isFirebaseFcmEnabled = config.getOrThrow("isFirebaseFcmEnabled") == "true";
+        this.isOneSignalEnabled = config.getOrThrow("isOneSignalEnabled") == "true";
 
         if (this.isFirebaseFcmEnabled) {
             this.messaging = getMessaging();
         }
-
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
-                "99976f21-4d5b-45c4-a0bd-0b601c6824be",
-                "os_v2_app_tglw6iknlnc4jif5bnqby2bex3cf4ujuiggelonus743wf3g3xjmz24y6ujw7lttdychu3p6tyjb5xmbsyfzpnxjshhouhhqjnmj5uahtms2lr3q5cauzbyc2evclak454agw47viyngbpmus42zd6ev2ke4lp7onzotyagwmy"
+                this.config.getOrThrow("oneSignalAppId"),
+                this.config.getOrThrow("oneSignalApiKey")
             );
         }
     }
 
-    /** Subscribe to OneSignal topic */
+
     @OnEvent("topic.onesignal")
-    async onesignalTopic(event: { token: string; topic: string }) {
-        if (!this.onesignalClient) return;
-        await this.onesignalClient.editDevice(event.token, { tags: { [event.topic]: true } });
+    async onesignalTopic(event: object) {
+        let token = event["token"];
+        let topic = event["topic"];
+        if (!this.onesignalClient) {
+            return;
+        }
+        await this.onesignalClient.editDevice(token, { "tags": { [topic]: true } });
     }
 
-    /** Subscribe to FCM topic */
     @OnEvent("topic.fcm")
-    async fcmTopic(event: { token: string; topic: string }) {
+    async fcmTopic(event: any) {
+        let token = event["token"];
+        let topic = event["topic"];
         if (this.messaging) {
-            await this.messaging.subscribeToTopic(event.token, event.topic);
+            await this.messaging.subscribeToTopic(token, topic);
         }
     }
 
-    /** Unsubscribe from FCM topic */
     @OnEvent("un.sub")
-    async unsubscribeFCM(event: { token: string; topic: string }) {
+    async unsubscribeFCM(event: any) {
+        let token = event["token"];
+        let topic = event["topic"];
         if (this.messaging) {
-            await this.messaging.unsubscribeFromTopic(event.token, event.topic);
+            await this.messaging.unsubscribeFromTopic(token, topic);
         }
     }
 
-    /** Send notification to all active users */
-    @OnEvent("send.all.active")
+    @OnEvent('send.all.active')
     async sendToAllActiveUsers(title: string, body: string) {
-        if (this.isFirebaseFcmEnabled && this.messaging) {
+        if (this.isFirebaseFcmEnabled) {
             try {
+                // Sending notification to Android topic
                 await this.messaging.send({
-                    topic: PushTopics.AdminAndroid,
+                    topic: 'AdminAndroid', // Make sure this topic is correctly subscribed by users
                     notification: { body, title },
-                    android: { priority: "high" }
+                    android: { priority: 'high' },
+                    apns: { payload: { aps: { contentAvailable: true } } },
                 });
 
+                // Sending notification to iOS topic
                 await this.messaging.send({
-                    topic: PushTopics.AdminIos,
+                    topic: 'AdminIos', // Make sure this topic is correctly subscribed by users
                     notification: { body, title },
-                    apns: { headers: { "apns-priority": "10" } }
+                    android: { priority: 'high' },
+                    apns: { payload: { aps: { contentAvailable: true } } },
                 });
+
             } catch (err) {
-                console.error(err);
+                console.error('Error sending Firebase notification:', err);
             }
         }
 
-        if (this.isOneSignalEnabled && this.onesignalClient) {
+        if (this.isOneSignalEnabled) {
             const notification: CreateNotificationBody = {
-                included_segments: ["Active Users", "Subscribed Users"],
+                included_segments: ['Active Users', 'Subscribed Users'],
                 priority: 10,
                 headings: { en: title },
-                contents: { en: body }
+                contents: { en: body },
             };
 
-            this.onesignalClient.createNotification(notification).catch(console.error);
+            this.onesignalClient.createNotification(notification)
+                .then(response => console.log('OneSignal notification sent:', response))
+                .catch(err => console.error('OneSignal error:', err));
         }
     }
 
-    /** Send OneSignal Notification */
     @OnEvent("send.onesignal")
     async sendToOneSignal(event: NotificationData) {
-        if (!event.tokens.length) return;
-        event.body = event.body.slice(0, 1000);
-
-        if (JSON.stringify(event.data).length >= 4000) {
+        if (event.tokens.length == 0) {
+            return;
+        }
+        if (event.body.length > 1000) {
+            event.body = event.body.slice(0, 1000);
+        }
+        if (event.data.toString().length >= 4000) {
             delete event.data["vMessage"];
         }
-
         try {
             for (let i = 0; i < event.tokens.length; i += 2000) {
-                const batchTokens = event.tokens.slice(i, i + 2000);
-                await this._oneSignalPush(event, batchTokens);
+                const listOf1000Tokens = event.tokens.slice(i, i + 2000);
+                // using await to wait for sending to 1000 token
+                await this._oneSignalPush(event, listOf1000Tokens);
             }
         } catch (e) {
-            console.error(e);
+            console.log(e);
         }
+
     }
 
-    /** Send Firebase Cloud Messaging (FCM) Notification */
     @OnEvent("send.fcm")
     async sendToFcm(event: NotificationData) {
-        if (!event.tokens.length) return;
-        event.body = event.body.slice(0, 1000);
-
-        if (JSON.stringify(event.data).length >= 4000) {
+        if (event.tokens.length == 0) {
+            return;
+        }
+        if (event.body.length > 1000) {
+            event.body = event.body.slice(0, 1000);
+        }
+        if (event.data.toString().length >= 4000) {
             delete event.data["vMessage"];
         }
-
         try {
             if (this.isFirebaseFcmEnabled) {
                 for (let i = 0; i < event.tokens.length; i += 1000) {
-                    const batchTokens = event.tokens.slice(i, i + 1000);
-                    await this._fcmSend(event, batchTokens);
+                    const listOf1000Tokens = event.tokens.slice(i, i + 1000);
+                    // using await to wait for sending to 1000 token
+                    await this._fcmSend(event, listOf1000Tokens);
                 }
             }
         } catch (e) {
-            console.error(e);
+            console.log(e);
         }
     }
 
-    private async _fcmSend(event: NotificationData, tokens: string[]) {
-        const messages: Message[] = tokens.map(token => ({
-            token, // Each token needs an individual message
-            notification: {
-                title: event.title,
-                body: event.body,
-            },
-            data: event.data,
-            android: {
+
+    private async _fcmSend(event: NotificationData, tokens: any[]) {
+        this.messaging
+            .sendEachForMulticast({
                 notification: {
-                    tag: Math.random().toString(),
-                    icon: "@mipmap/ic_launcher",
-                    priority: "high",  // Fix: Explicitly using "high" instead of a string
-                    defaultSound: true,
-                    channelId: event.tag
+                    body: event.body,
+                    title: event.title
                 },
-                priority: "high" // Fix: Explicitly set the correct enum value
-            },
-            apns: {
-                payload: {
-                    aps: {
-                        contentAvailable: true,
+                tokens: tokens,
+                data: event.data,
+                android: {
+                    notification: {
+                        tag: Math.random().toString(),
+                        icon: "@mipmap/ic_launcher",
+                        priority: "max",
+                        defaultSound: true,
+                        channelId: event.tag
                     },
+                    priority: "high"
+                    // collapseKey: event.tag,
                 },
-                headers: {
-                    "apns-priority": "10"
+                apns: {
+                    payload: {
+                        aps: {
+                            contentAvailable: true,
+                            // mutableContent:true
+                        },
+                    },
+                    headers: {
+                        "apns-priority": "10"
+                    }
                 }
-            }
-        }));
-        console.log("Notification Payload Size:", Buffer.byteLength(JSON.stringify(event.data), 'utf8'));
-
-        console.log(messages,"messages");
-        try {
-            const response = await this.messaging.sendEach(messages);
-            console.log("Successfully sent messages:", response);
-        } catch (error) {
-            console.error("Error sending messages:", error);
-        }
+            })
+            .then(async (reason) => {
+                await this._afterFcmSendMsg(reason, event);
+            })
+            .catch((reason) => {
+                console.log(reason);
+            });
     }
 
-    /** Send push notification to OneSignal */
-    private async _oneSignalPush(event: NotificationData, tokens: string[]) {
+
+    private async _oneSignalPush(event: NotificationData, tokens: any[]) {
         const notification: CreateNotificationBody = {
-            included_segments: ["include_player_ids"],
-            priority: 10,
-            include_player_ids: tokens,
-            headings: { en: event.title },
-            contents: { en: event.body },
-            content_available: true,
+            "included_segments": [
+                "include_player_ids"
+            ],
+            "priority": 10,
+            "include_player_ids": tokens,
+            headings: { "en": event.title },
+            "contents": {
+                "en": event.body
+            },
+            "content_available": true,
             data: event.data
-        };
 
-        this.onesignalClient.createNotification(notification).catch(console.error);
+        };
+        this.onesignalClient.createNotification(notification)
+            .then(response => {
+                //console.log(response)
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
 
-    /** Handle FCM failures and remove invalid tokens */
-    private async _afterFcmSendMsg(reason, event: NotificationData) {
-        let tokensToDelete: string[] = [];
-
-        for (const response of reason.responses) {
-            if (!response.success) {
-                const err = response.error?.code;
-                const errInfo = response.error?.errorInfo?.code;
+    private async _afterFcmSendMsg(reason, event) {
+        let tokensToDelete = [];
+        for (let x = 0; x < reason.responses.length; x++) {
+            if (!reason.responses[x].success) {
+                // console.log(reason.responses[x]);
+                let err = reason.responses[x]["error"]["code"];
+                let errInfo = reason.responses[x]["error"]["errorInfo"]["code"];
                 if (fcmErrorCodes.includes(err) || fcmErrorCodes.includes(errInfo)) {
-                    tokensToDelete.push(event.tokens[reason.responses.indexOf(response)]);
+                    //  console.log("Fcm Token is" + err);
+                    let token = event.tokens[x];
+                    tokensToDelete.push(token);
                 }
+                //  console.log(token);
             }
         }
-
-        if (tokensToDelete.length) {
-            console.log("Deleting invalid tokens:", tokensToDelete);
+        if (tokensToDelete.length != 0) {
+            console.log("start delete tokens " + tokensToDelete);
             await this.userDevice.deleteFcmTokens(tokensToDelete);
         }
     }
+
+
 }
+
+
+

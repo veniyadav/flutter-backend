@@ -8,35 +8,35 @@
  * various notifications over Socket.IO.
  */
 
-import {BadRequestException, Injectable, NotFoundException,} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, } from '@nestjs/common';
 
-import {CallStatus, MessageType, RoomType, SocketEventsType,} from '../../../core/utils/enums';
-import {RoomMiddlewareService} from '../../room_middleware/room_middleware.service';
-import {IRoomMember} from '../../room_member/entities/room_member.entity';
-import {SchedulerRegistry} from '@nestjs/schedule';
-import {CreateCallMemberDto} from './dto/create-call_member.dto';
-import {AcceptCallMemberDto} from './dto/accept-call_member.dto';
-import {CallMemberService} from '../call_member/call_member.service';
-import {UserService} from '../../../api/user_modules/user/user.service';
-import {SocketIoService} from '../../socket_io/socket_io.service';
-import {UserBanService} from '../../../api/user_modules/user_ban/user_ban.service';
-import {MessageService} from '../../message/message.service';
-import {newMongoObjId} from '../../../core/utils/utils';
-import {getMsgDtoObj} from '../../channel/chat.helper';
-import {MongoCallIdDto} from '../../../core/common/dto/mongo.call.id.dto';
-import {SendMessageDto} from '../../channel/dto/send.message.dto';
-import {IUser} from '../../../api/user_modules/user/entities/user.entity';
-import {AppConfigService} from '../../../api/app_config/app_config.service';
-import {i18nApi} from '../../../core/utils/res.helpers';
-import {CallEmitter} from './call_emitter';
-import {AgoraService} from '../../agora/agora.service';
-import {MongoRoomIdDto} from '../../../core/common/dto/mongo.room.id.dto';
-import {MongoIdDto} from '../../../core/common/dto/mongo.id.dto';
-import {CallHistoryService} from "../call_history/call_history.service";
-import {ICallHistory} from "../call_history/call.history.entity";
-import {RoomMemberService} from "../../room_member/room_member.service";
-import {GroupMemberService} from "../../group_member/group_member.service";
-import {UserGlobalCallStatus} from "../utils/user-global-call-status.model";
+import { CallStatus, MessageType, RoomType, SocketEventsType, } from '../../../core/utils/enums';
+import { RoomMiddlewareService } from '../../room_middleware/room_middleware.service';
+import { IRoomMember } from '../../room_member/entities/room_member.entity';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CreateCallMemberDto } from './dto/create-call_member.dto';
+import { AcceptCallMemberDto } from './dto/accept-call_member.dto';
+import { CallMemberService } from '../call_member/call_member.service';
+import { UserService } from '../../../api/user_modules/user/user.service';
+import { SocketIoService } from '../../socket_io/socket_io.service';
+import { UserBanService } from '../../../api/user_modules/user_ban/user_ban.service';
+import { MessageService } from '../../message/message.service';
+import { newMongoObjId } from '../../../core/utils/utils';
+import { getMsgDtoObj } from '../../channel/chat.helper';
+import { MongoCallIdDto } from '../../../core/common/dto/mongo.call.id.dto';
+import { SendMessageDto } from '../../channel/dto/send.message.dto';
+import { IUser } from '../../../api/user_modules/user/entities/user.entity';
+import { AppConfigService } from '../../../api/app_config/app_config.service';
+import { i18nApi } from '../../../core/utils/res.helpers';
+import { CallEmitter } from './call_emitter';
+import { AgoraService } from '../../agora/agora.service';
+import { MongoRoomIdDto } from '../../../core/common/dto/mongo.room.id.dto';
+import { MongoIdDto } from '../../../core/common/dto/mongo.id.dto';
+import { CallHistoryService } from "../call_history/call_history.service";
+import { ICallHistory } from "../call_history/call.history.entity";
+import { RoomMemberService } from "../../room_member/room_member.service";
+import { GroupMemberService } from "../../group_member/group_member.service";
+import { UserGlobalCallStatus } from "../utils/user-global-call-status.model";
 
 @Injectable()
 export class CallService {
@@ -75,16 +75,16 @@ export class CallService {
         if (!appConfig.allowCall) {
             throw new BadRequestException(i18nApi.callNotAllowedString);
         }
-        let activeRing = await this.userService.findById(dto.myUser._id,"userGlobalCallStatus");
+        let activeRing = await this.userService.findById(dto.myUser._id, "userGlobalCallStatus");
         if (activeRing.userGlobalCallStatus) {
-            if(activeRing.userGlobalCallStatus.callId){
-                return {callId: activeRing.userGlobalCallStatus.callId}
+            if (activeRing.userGlobalCallStatus.callId) {
+                return { callId: activeRing.userGlobalCallStatus.callId }
             }
         }
         // If it's a GroupChat, create a group call notification message and return.
         if (roomMember.rT == RoomType.GroupChat) {
             let callId = await this.createGroupCallNotify(dto, roomMember);
-            return {callId};
+            return { callId };
         }
 
         // Otherwise, if it's not a single (direct) room, throw an exception.
@@ -123,7 +123,7 @@ export class CallService {
         await this.updateCallStatusForUser(dto.myUser._id, caller);
         await this.updateCallStatusForUser(peerUser._id, callee);
         await this.registerMissedCall(dto, callId, peerUser._id, appConfig.callTimeout);
-        return {callId};
+        return { callId };
     }
 
     private async registerMissedCall(
@@ -198,8 +198,8 @@ export class CallService {
         // Find any Meet entry where userId is the callee and callStatus is 'Ring'.
         const call = await this.callHistory.findOne({
             participants: userId,
-            caller: {$ne: userId},
-            callStatus: {$eq: CallStatus.Ring},
+            caller: { $ne: userId },
+            callStatus: { $eq: CallStatus.Ring },
         });
 
         if (!call) return null;
@@ -310,13 +310,13 @@ export class CallService {
      * Transitions the call status from 'Ring' to 'InCall'.
      */
     async acceptCall(dto: AcceptCallMemberDto) {
-        const call = await this.callHistory.findOne({_id: dto.callId, participants: dto.myUser._id});
+        const call = await this.callHistory.findOne({ _id: dto.callId, participants: dto.myUser._id });
         if (!call) throw new BadRequestException('You dont have any call to acceptCall you are not participating in ' + call);
         // The call must be ringing in order to accept.
 
         // @ts-ignore
         let ifCanAccept = call.callStatus !== CallStatus.Ring || call.callStatus !== CallStatus.InCall
-
+        console.log("ifCanAccept", ifCanAccept);
         if (ifCanAccept) {
             throw new BadRequestException('Call status not ring! to be acceptCall ' + call.callStatus);
         }
@@ -329,7 +329,7 @@ export class CallService {
         // Confirm the user is not banned or removed from the room.
         let rM = await this.isThereRoomMemberAndNotBanedOrThrow(call.roomId, dto.myUser._id);
         let isGroup = rM.rT == RoomType.GroupChat
-
+        console.log("isGroup", isGroup);
         // Add this user as a call member and update the meet status to 'InCall'.
         const callMemberCreation = this.callMemberService.create({
             callId: call._id,
@@ -340,10 +340,10 @@ export class CallService {
         const callUpdated = this.callHistory.findByIdAndUpdate(dto.callId, {
             callStatus: CallStatus.InCall,
         });
-
+        console.log("callMemberCreation", callMemberCreation);
         await Promise.all([callMemberCreation, callUpdated]);
         if (isGroup) {
-            return {callId: dto.callId};
+            return { callId: dto.callId };
         }
         // Retrieve the caller's callMember entry to get their device ID.
         const peerUserCallMember = await this.callMemberService.findOne({
@@ -373,8 +373,7 @@ export class CallService {
                 peerAnswer: dto.payload, // Contains any additional offer/answer data.
             }),
         );
-
-        return {callId: dto.callId};
+        return { callId: dto.callId };
     }
 
     /**
@@ -422,7 +421,7 @@ export class CallService {
         const call = await this.callHistory.findByIdOrThrow(callId);
         // Only handle if the call is still 'Ring'.
         if (call.callStatus == CallStatus.Ring) {
-            await this.callHistory.findOneAndUpdate({_id: callId}, {
+            await this.callHistory.findOneAndUpdate({ _id: callId }, {
                 callStatus: CallStatus.Timeout,
             });
 
@@ -453,7 +452,7 @@ export class CallService {
      * while it is either 'Ring' or 'InCall', without needing separate endpoints.
      */
     async endCallV2(dto: MongoCallIdDto) {
-        const call = await this.callHistory.findOne({_id: dto.callId, participants: dto.myUser._id});
+        const call = await this.callHistory.findOne({ _id: dto.callId, participants: dto.myUser._id });
         if (!call) throw new BadRequestException('You dont have any call to endCallV2 you are not participating in ' + call);
         let rM = await this.isThereRoomMemberAndNotBanedOrThrow(call.roomId, dto.myUser._id);
         const myId = dto.myUser._id.toString();
@@ -503,10 +502,10 @@ export class CallService {
                         participants: user._id.toString(),
                     },
                     {
-                        deleteFrom: {$ne: newMongoObjId(user._id)},
+                        deleteFrom: { $ne: newMongoObjId(user._id) },
                     },
                 ],
-                callStatus: {$in: [CallStatus.Canceled, CallStatus.Finished, CallStatus.Rejected]},
+                callStatus: { $in: [CallStatus.Canceled, CallStatus.Finished, CallStatus.Rejected] },
             },
             "-participants -deleteFrom",
             {
@@ -669,7 +668,7 @@ export class CallService {
         return call._id;
     }
 
-    private async updateCallStatusForUser(userId : any, dto: UserGlobalCallStatus) {
+    private async updateCallStatusForUser(userId: any, dto: UserGlobalCallStatus) {
         if (!userId) return
         await this.userService.findByIdAndUpdate(userId, {
             userGlobalCallStatus: dto
