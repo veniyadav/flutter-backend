@@ -47,7 +47,7 @@ export class NotificationEvent {
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
                 "99976f21-4d5b-45c4-a0bd-0b601c6824be",
-                "os_v2_app_tglw6iknlnc4jif5bnqby2bex3dawied6fueos_v2_app_tglw6iknlnc4jif5bnqby2bex3cf4ujuiggelonus743wf3g3xjmz24y6ujw7lttdychu3p6tyjb5xmbsyfzpnxjshhouhhqjnmj5uahtms2lr3q5cauzbyc2evclak454agw47viyngbpmus42zd6ev2ke4lp7onzotyagwmy"
+                "os_v2_app_tglw6iknlnc4jif5bnqby2bex3cf4ujuiggelonus743wf3g3xjmz24y6ujw7lttdychu3p6tyjb5xmbsyfzpnxjshhouhhqjnmj5uahtms2lr3q5cauzbyc2evclak454agw47viyngbpmus42zd6ev2ke4lp7onzotyagwmy"
             );
         }
     }
