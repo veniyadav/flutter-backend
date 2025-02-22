@@ -43,7 +43,7 @@ export class NotificationEvent {
         if (this.isFirebaseFcmEnabled) {
             this.messaging = getMessaging();
         }
-        
+
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
                 "99976f21-4d5b-45c4-a0bd-0b601c6824be",
@@ -179,7 +179,7 @@ export class NotificationEvent {
                 }
             }
         }));
-    
+        console.log(messages, "messages");
         try {
             const response = await this.messaging.sendEach(messages);
             console.log("Successfully sent messages:", response);
@@ -187,7 +187,7 @@ export class NotificationEvent {
             console.error("Error sending messages:", error);
         }
     }
-    
+
     /** Send push notification to OneSignal */
     private async _oneSignalPush(event: NotificationData, tokens: string[]) {
         const notification: CreateNotificationBody = {
