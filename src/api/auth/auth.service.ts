@@ -348,6 +348,7 @@ export class AuthService {
     private _jwtVerify(token: string): JwtDecodeRes {
         try {
             let payload = this.jwtService.verify(token);
+            console.log("paylod",payload);
             return {
                 deviceId: payload["deviceId"],
                 userId: payload["id"]

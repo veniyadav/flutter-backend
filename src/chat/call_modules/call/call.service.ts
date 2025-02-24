@@ -365,7 +365,7 @@ export class CallService {
         }
 
         // Notify the caller that their call has been accepted.
-        peerSocket.emit(
+        const result = peerSocket.emit(
             SocketEventsType.v1OnCallAccepted,
             JSON.stringify({
                 callId: dto.callId,
@@ -373,6 +373,7 @@ export class CallService {
                 peerAnswer: dto.payload, // Contains any additional offer/answer data.
             }),
         );
+        console.log("result", result);
         return { callId: dto.callId };
     }
 
