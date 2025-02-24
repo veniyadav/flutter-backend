@@ -460,3 +460,17 @@ ws://localhost:6000/socket.io/?auth=Bearer+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
 
 <!-- https://www.kiaancloud.store/fl -->
 <!-- https://hrb5wx2v-6000.inc1.devtunnels.ms/ -->
+
+
+
+http://localhost:4000/api/v1/admin-panel/login
+
+{
+    "email": "demo@gmail.com",
+    "password": "11223344",
+    "platform": "windows",
+    "method": "email",
+    "language": "english",
+    "deviceId": "AE3A.240806.036",
+    "deviceInfo": " gvrf"
+}
