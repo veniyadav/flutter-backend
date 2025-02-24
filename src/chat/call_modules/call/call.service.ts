@@ -311,9 +311,11 @@ export class CallService {
      */
     async acceptCall(dto: AcceptCallMemberDto) {
         const call = await this.callHistory.findOne({ _id: dto.callId, participants: dto.myUser._id });
+        console.log(" dto.callId", dto.callId);
+        console.log(" dto.myUser._id", dto.myUser._id);
         if (!call) throw new BadRequestException('You dont have any call to acceptCall you are not participating in ' + call);
         // The call must be ringing in order to accept.
-
+        console.log(call, "call");
         // @ts-ignore
         let ifCanAccept = call.callStatus !== CallStatus.Ring || call.callStatus !== CallStatus.InCall
         console.log("ifCanAccept", ifCanAccept);
