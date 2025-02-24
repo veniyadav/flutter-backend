@@ -17,8 +17,6 @@ import { PushTopics } from "../../core/utils/enums";
 //
 export class NotificationData {
 
-
-
     tokens: string[];
     title: string;
     body: string;
@@ -55,12 +53,11 @@ export class NotificationEvent {
         }
         if (this.isOneSignalEnabled) {
             this.onesignalClient = new OneSignal.Client(
-                "15b8ce1f-a934-4566-8c52-ddbb4cb24567",
-                "os_v2_app_cw4m4h5jgrcwndcs3w5uzmsfm77naczkw6jej5fqqvtrmewuneqrhjv52o42a55tyhrtrhknsc4yg6sykolyhllll6pstakh747k35q"
+                "99976f21-4d5b-45c4-a0bd-0b601c6824be",
+                "os_v2_app_tglw6iknlnc4jif5bnqby2bex3cf4ujuiggelonus743wf3g3xjmz24y6ujw7lttdychu3p6tyjb5xmbsyfzpnxjshhouhhqjnmj5ua"
             );
         }
     }
-
 
     @OnEvent("topic.onesignal")
     async onesignalTopic(event: object) {
