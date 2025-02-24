@@ -32,8 +32,19 @@ async function bootstrap() {
   console.log(process.env.NODE_ENV)
   // if (process.env.isFirebaseFcmEnabled == "true") {
     console.log("You use firebase as  push notification provider");
-    await admin.initializeApp({ credential: admin.credential.cert(path.join(root.path, "firebase-adminsdk.json")) });
-  // }
+    if (!process.env.FIREBASE_CREDENTIALS) {
+      throw new Error("FIREBASE_CREDENTIALS environment variable is missing!");
+    }
+    try {
+      const credentials = Buffer.from(process.env.FIREBASE_CREDENTIALS, "base64").toString("utf-8");
+      console.log("process.env.FIREBASE_CREDENTIALS",credentials)
+      admin.initializeApp({
+        credential: admin.credential.cert(JSON.parse(credentials)),
+      });
+    } catch (error) {
+      console.error("Failed to initialize Firebase Admin SDK:", error.message);
+    }
+        
   // if (process.env.isOneSignalEnabled == "true") {
     console.log("You use  OneSignal as  push notification provider ");
   // }
